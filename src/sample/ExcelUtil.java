@@ -33,6 +33,8 @@ public class ExcelUtil {
 
 	private static final short IMAGE_ROW_HEIGHT = 4500;
 	private static final short DEFAULT_ROW_HEIGHT = 255;
+	private static final int IMAGE_COLUMN_INDEX = 9;
+	private static final int ID_COLUMN_INDEX = 10;
 	
 	public static void exportToExcel(List<TyresCollection> tyresCollectionList) throws IOException {
 		HSSFWorkbook workbook = new HSSFWorkbook();
@@ -42,7 +44,7 @@ public class ExcelUtil {
 		Map<String, Object[]> data = new LinkedHashMap<String, Object[]>();
 		data.put("1", new Object[] { "Name", "SKU", "Branch",
 				"Tyre Width", "Tyre Profile", "Rim Size", "Load Index",
-				"Tyre SI", "Price", "Image" });
+				"Tyre SI", "Price", "Image", "XXX" });
 		
 		// prepare data
 		int rowNumber = 2;
@@ -60,10 +62,11 @@ public class ExcelUtil {
 						tyres.getLoadIndex(),
 						tyres.getSi(),
 						tyres.getPrice(), 
-						""
+						"",
+						tyresCollection.getId()
 				};
 				
-				objArray[objArray.length - 1] = getImageStream(tyresCollection.getImageUrl());
+				objArray[IMAGE_COLUMN_INDEX] = getImageStream(tyresCollection.getImageUrl());
 				data.put(String.valueOf(rowNumber++), objArray);
 			}
 			
@@ -77,7 +80,13 @@ public class ExcelUtil {
 	        Row row = sheet.createRow(rownum);
 	        Object [] objArr = data.get(key);
 	        int cellnum = 0;
-	        for (Object obj : objArr) {
+	        for (int i = 0; i < objArr.length; i++) {
+	        	Object obj = objArr[i];
+	        	
+	        	if (i == ID_COLUMN_INDEX) {
+	        		continue;
+	        	}
+	        	
 	            Cell cell = row.createCell(cellnum++);
 	            if(obj instanceof String)
 	                cell.setCellValue((String)obj);
@@ -91,8 +100,15 @@ public class ExcelUtil {
 	        	continue;
 	        }
 	        
-	        int imageColum = objArr.length - 1;
-			addImages( (InputStream) objArr[imageColum], workbook, sheet, rownum, imageColum);
+	        Integer id = (Integer) objArr[ID_COLUMN_INDEX];
+    		if (imagesId.contains(id)) {
+    			row.setHeight(DEFAULT_ROW_HEIGHT);
+    			continue;
+    		} else {
+    			imagesId.add(id);
+    		}
+	        
+			addImages( (InputStream) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
 			row.setHeight(IMAGE_ROW_HEIGHT);
 		
 			rownum++;

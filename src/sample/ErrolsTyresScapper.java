@@ -20,7 +20,7 @@ import com.google.common.net.UrlEscapers;
 public class ErrolsTyresScapper {
 
 	private final static String URL = "http://www.errolstyres.co.za/";
-	private static final int NO_TYRES_TEST = 1;
+	private static final int NO_TYRES_TEST = 2;
 
 	private WebDriver webDriver;
 
@@ -65,7 +65,7 @@ public class ErrolsTyresScapper {
 					By.xpath("./a[@class='ProductTitle']/span")).getText();
 			
 			String productName = element.findElement(
-					By.xpath("./a[@class='ProductTitle']/br/following-sibling::*[1]")).getText().trim();
+					By.xpath("./a[@class='ProductTitle']")).getText().trim().split("\n")[1];
 			
 			String productUrl = element.findElement(
 					By.xpath("./a[@class='ProductTitle']"))
@@ -77,6 +77,7 @@ public class ErrolsTyresScapper {
 			 String imageURL = URL + imageRelativeUrl.substring(imageRelativeUrl.indexOf("/") + 1, imageRelativeUrl.length());
 			
 			TyresCollection tyresCollection = new TyresCollection(productTitle, productUrl, imageURL);
+			tyresCollection.setName(productName);
 			tyresCollection.setBranch(productTitle);
 			tyresCollectionList.add(tyresCollection);
 			tyresCollection.setId(i + 1);
