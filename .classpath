@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="lib"/>
 	<classpathentry kind="src" path="driver"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/selenium-java-2.53.0.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-java-2.53.0.jar" sourcepath="C:/Users/sgscdhdx/Downloads/selenium-java-2.53.0/selenium-2.53.0/selenium-java-2.53.0-srcs.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.53.0.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.14-20160307.jar"/>
 	<classpathentry kind="output" path="bin"/>

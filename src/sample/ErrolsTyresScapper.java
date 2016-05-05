@@ -1,5 +1,7 @@
 package sample;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,9 +15,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import com.google.common.net.UrlEscapers;
+
 public class ErrolsTyresScapper {
 
 	private final static String URL = "http://www.errolstyres.co.za/";
+	private static final int NO_TYRES_TEST = 1;
 
 	private WebDriver webDriver;
 
@@ -39,8 +44,9 @@ public class ErrolsTyresScapper {
 	}
 
 	public void openSite(String url) {
-		webDriver.navigate().to(url);
-
+		webDriver.get(url);
+//		webDriver.navigate().to(url);
+		
 		try {
 			webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		} catch (Exception e) {
@@ -48,32 +54,39 @@ public class ErrolsTyresScapper {
 		}
 	}
 
-	public List<Tyres> getTyresList() {
+	public List<TyresCollection> getTyresCollectionList() {
 		List<WebElement> findElements = webDriver.findElements(By
 				.xpath("//div[@class='Product tyrespecials']"));
-		List<Tyres> tyresList = new ArrayList<>();
-		for (int i = 0; i < findElements.size(); i++) {
-			Tyres tyres = new Tyres();
+		List<TyresCollection> tyresCollectionList = new ArrayList<>();
+//		for (int i = 0; i < findElements.size(); i++) {
+		for (int i = 0; i < NO_TYRES_TEST; i++) {
 			WebElement element = findElements.get(i);
 			String productTitle = element.findElement(
 					By.xpath("./a[@class='ProductTitle']/span")).getText();
-			tyres.setBranch(productTitle);
-			System.out.println(productTitle);
-
+			
+			String productName = element.findElement(
+					By.xpath("./a[@class='ProductTitle']/br/following-sibling::*[1]")).getText().trim();
+			
 			String productUrl = element.findElement(
 					By.xpath("./a[@class='ProductTitle']"))
 					.getAttribute("href");
-			tyres.setUrl(productUrl);
-			System.out.println(productUrl);
 
-			tyresList.add(tyres);
+			String imageStyle = element.findElement(
+					By.xpath("./a[@class='ProductPic']/img[contains(@style,'background-image')]")).getAttribute("style");
+			 String imageRelativeUrl = imageStyle.substring(imageStyle.indexOf("\""), imageStyle.lastIndexOf("\""));
+			 String imageURL = URL + imageRelativeUrl.substring(imageRelativeUrl.indexOf("/") + 1, imageRelativeUrl.length());
+			
+			TyresCollection tyresCollection = new TyresCollection(productTitle, productUrl, imageURL);
+			tyresCollection.setBranch(productTitle);
+			tyresCollectionList.add(tyresCollection);
+			tyresCollection.setId(i + 1);
 		}
 		
-		return tyresList;
+		return tyresCollectionList;
 	}
 	
-	public void doUpdateTyres(Tyres tyres) {
-		openSite(tyres.getUrl());
+	public void doUpdateTyres(TyresCollection tyresCollection) {
+		openSite(tyresCollection.getPageUrl());
 		List<WebElement> elements = webDriver.findElements(By.xpath("//table[@class='Chart']//tr[position() > 1]"));
 		for (int i = 0; i < elements.size(); i++) {
 			WebElement trElement = elements.get(i);
@@ -82,12 +95,23 @@ public class ErrolsTyresScapper {
 				throw new IllegalArgumentException("Number of columns less than 3: " + tdElements.size());
 			}
 			
+			Tyres tyres = new Tyres();
+			
 			doUpdateTyresItemColumn(tyres, tdElements.get(0));
 			doUpdateTyresPartNoColumn(tyres, tdElements.get(1));
 			doUpdateTyresPriceColumn(tyres, tdElements.get(2));
+			
+			tyresCollection.addTyres(tyres);
 		}
+		
 	}
 	
+	private void closeBrowser() {
+		//close the browser
+	    webDriver.close();
+	    webDriver.quit();
+	}
+
 	private void doUpdateTyresPriceColumn(Tyres tyres, WebElement tdElement) {
 		String price = tdElement.getText().trim();
 		tyres.setPrice(price);
@@ -129,22 +153,25 @@ public class ErrolsTyresScapper {
 				tyres.setSi(loadIndexSI);
 			} else {
 				tyres.setLoadIndex(loadIndexSI.substring(0, loadIndexSILength - 1));
-				tyres.setLoadIndex(loadIndexSI.substring(loadIndexSILength - 1, loadIndexSILength));
+				tyres.setSi(loadIndexSI.substring(loadIndexSILength - 1, loadIndexSILength));
 			}
 		}
 	}
 	
-	public void doUpdateTyresList(List<Tyres> tyresList) {
-		for (int i = 0; i < 3; i++) {
-			Tyres tyres = tyresList.get(i);
-			doUpdateTyres(tyres);
+	public void doUpdateTyresList(List<TyresCollection> tyresCollectionList) {
+		for (int i = 0; i < NO_TYRES_TEST; i++) {
+			TyresCollection tyresCollection = tyresCollectionList.get(i);
+			doUpdateTyres(tyresCollection);
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		ErrolsTyresScapper scrapper = new ErrolsTyresScapper();
 		scrapper.openSite(URL);
-		List<Tyres> tyresList = scrapper.getTyresList();
-		scrapper.doUpdateTyresList(tyresList);
+		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
+		scrapper.doUpdateTyresList(tyresCollectionList);
+
+		ExcelUtil.exportToExcel(tyresCollectionList);
+		scrapper.closeBrowser();
 	}
 }
