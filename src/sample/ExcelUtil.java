@@ -102,6 +102,7 @@ public class ExcelUtil {
 	        
 	        Integer id = (Integer) objArr[ID_COLUMN_INDEX];
     		if (imagesId.contains(id)) {
+    			rownum++;
     			row.setHeight(DEFAULT_ROW_HEIGHT);
     			continue;
     		} else {
