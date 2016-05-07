@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.ClientAnchor.AnchorType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Picture;
@@ -36,7 +34,7 @@ public class ExcelUtil {
 	private static final int IMAGE_COLUMN_INDEX = 9;
 	private static final int ID_COLUMN_INDEX = 10;
 	
-	public static void exportToExcel(List<TyresCollection> tyresCollectionList) throws IOException {
+	public static void exportToExcel(List<TyresCollection> tyresCollectionList, String fileName) throws IOException {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet("ErrolsTyres");
 		sheet.setDefaultRowHeight(IMAGE_ROW_HEIGHT);
@@ -116,7 +114,7 @@ public class ExcelUtil {
 	    }
 	    
 	    try {
-	        FileOutputStream out =new FileOutputStream(new File("D:/MyApps/Tyres/TyresResult.xls"));
+	        FileOutputStream out =new FileOutputStream(new File(fileName));
 	        workbook.write(out);
 	        out.close();
 	        System.out.println("Excel written successfully..");

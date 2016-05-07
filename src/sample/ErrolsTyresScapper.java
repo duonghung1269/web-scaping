@@ -1,9 +1,7 @@
 package sample;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -14,8 +12,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
-import com.google.common.net.UrlEscapers;
 
 public class ErrolsTyresScapper {
 
@@ -32,7 +28,7 @@ public class ErrolsTyresScapper {
 	private Map<String, Object[]> testresultdata;
 
 	public ErrolsTyresScapper() {
-		System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", "driver/chromedriver");
 		webDriver = new ChromeDriver();
 
 //		workbook = new HSSFWorkbook();
@@ -172,7 +168,7 @@ public class ErrolsTyresScapper {
 		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
 		scrapper.doUpdateTyresList(tyresCollectionList);
 
-		ExcelUtil.exportToExcel(tyresCollectionList);
+		ExcelUtil.exportToExcel(tyresCollectionList, "ErrolsTyres.xls");
 		scrapper.closeBrowser();
 	}
 }
