@@ -16,7 +16,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class ErrolsTyresScapper {
 
 	private final static String URL = "http://www.errolstyres.co.za/";
-	private static final int NO_TYRES_TEST = 2;
+//	private static final int NO_TYRES_TEST = 100;
 
 	private WebDriver webDriver;
 
@@ -28,7 +28,7 @@ public class ErrolsTyresScapper {
 	private Map<String, Object[]> testresultdata;
 
 	public ErrolsTyresScapper() {
-		System.setProperty("webdriver.chrome.driver", "driver/chromedriver");
+		System.setProperty("webdriver.chrome.driver", "driver/chromedriver.exe");
 		webDriver = new ChromeDriver();
 
 //		workbook = new HSSFWorkbook();
@@ -52,11 +52,14 @@ public class ErrolsTyresScapper {
 
 	public List<TyresCollection> getTyresCollectionList() {
 		List<WebElement> findElements = webDriver.findElements(By
-				.xpath("//div[@class='Product tyrespecials']"));
+				.xpath("//div[@id='top_tyres']/div[@class='Product tyrespecials']"));
 		List<TyresCollection> tyresCollectionList = new ArrayList<>();
-//		for (int i = 0; i < findElements.size(); i++) {
-		for (int i = 0; i < NO_TYRES_TEST; i++) {
+		for (int i = 0; i < findElements.size(); i++) {
+//		for (int i = 0; i < NO_TYRES_TEST; i++) {
 			WebElement element = findElements.get(i);
+			
+//			System.out.println("Element: " + element);
+			
 			String productTitle = element.findElement(
 					By.xpath("./a[@class='ProductTitle']/span")).getText();
 			
@@ -67,16 +70,25 @@ public class ErrolsTyresScapper {
 					By.xpath("./a[@class='ProductTitle']"))
 					.getAttribute("href");
 
-			String imageStyle = element.findElement(
-					By.xpath("./a[@class='ProductPic']/img[contains(@style,'background-image')]")).getAttribute("style");
-			 String imageRelativeUrl = imageStyle.substring(imageStyle.indexOf("\""), imageStyle.lastIndexOf("\""));
-			 String imageURL = URL + imageRelativeUrl.substring(imageRelativeUrl.indexOf("/") + 1, imageRelativeUrl.length());
+			String imageURL = ""; 
+			
+			try {
+				String imageStyle = element.findElement(
+						By.xpath("./a[@class='ProductPic']/img[contains(@style,'url(')]")).getAttribute("style");
+				 String imageRelativeUrl = imageStyle.substring(imageStyle.indexOf("\""), imageStyle.lastIndexOf("\""));
+				 imageURL = URL + imageRelativeUrl.substring(imageRelativeUrl.indexOf("/") + 1, imageRelativeUrl.length());
+				 
+				 
+			} catch (Exception ex) {
+				System.out.println("No picture element: " + ex);
+			}
 			
 			TyresCollection tyresCollection = new TyresCollection(productTitle, productUrl, imageURL);
 			tyresCollection.setName(productName);
 			tyresCollection.setBranch(productTitle);
 			tyresCollectionList.add(tyresCollection);
 			tyresCollection.setId(i + 1);
+			
 		}
 		
 		return tyresCollectionList;
@@ -84,20 +96,36 @@ public class ErrolsTyresScapper {
 	
 	public void doUpdateTyres(TyresCollection tyresCollection) {
 		openSite(tyresCollection.getPageUrl());
-		List<WebElement> elements = webDriver.findElements(By.xpath("//table[@class='Chart']//tr[position() > 1]"));
+		WebElement tableElement = webDriver.findElements(By.xpath("//table[@class='Chart']")).get(0);
+		List<WebElement> elements = tableElement.findElements(By.xpath(".//tr[position() > 1]"));
+		
 		for (int i = 0; i < elements.size(); i++) {
 			WebElement trElement = elements.get(i);
 			List<WebElement> tdElements = trElement.findElements(By.xpath("./td"));
 			if (tdElements.size() < 3) {
 				throw new IllegalArgumentException("Number of columns less than 3: " + tdElements.size());
 			}
-			
+//			tdElements.get(1).getAttribute("class").trim();
+			//webDriver.findElements(By.xpath("//table[@class='Chart']")).get(0).findElements(By.xpath(".//tr[position() > 1]"))
+			//webDriver.findElements(By.xpath("//table[@class='Chart'][position() = 1]//tr[position() > 1]")).get(1).findElements(By.xpath("./td")).get(1).findElement(By.xpath("./div")).getText().trim()
 			Tyres tyres = new Tyres();
-			
-			doUpdateTyresItemColumn(tyres, tdElements.get(0));
-			doUpdateTyresPartNoColumn(tyres, tdElements.get(1));
-			doUpdateTyresPriceColumn(tyres, tdElements.get(2));
-			
+			try {
+				doUpdateTyresItemColumn(tyres, tdElements.get(0));
+				doUpdateTyresPartNoColumn(tyres, tdElements.get(1));
+				doUpdateTyresPriceColumn(tyres, tdElements.get(2));	
+			} catch (UnsupportedOperationException ex1) {				
+				System.out.println("Produt URL: " + tyresCollection.getPageUrl());
+				tyres.setSize("");
+				tyres.setProfile("");
+				tyres.setWidth("");
+				tyres.setLoadIndex("");
+				tyres.setSi("");
+			} catch (Exception ex) {
+				System.out.println("Name: " + tyresCollection.getName());
+				System.out.println("Branch: " + tyresCollection.getBranch());
+				ex.printStackTrace();
+			}
+
 			tyresCollection.addTyres(tyres);
 		}
 		
@@ -122,14 +150,25 @@ public class ErrolsTyresScapper {
 	private void doUpdateTyresItemColumn(Tyres tyres, WebElement tdElement) {
 		String string = tdElement.getText().trim();
 		
+
+		
 		String[] strings = string.split(" ");
+		List<String> stringList = new ArrayList<>();
+		for (String s : strings) {
+			if (!"".equals(s.trim())) {
+				stringList.add(s);
+			}
+		}
+
 		int length = strings.length;
 		
 		// set width and profile
 		if (0 < length) {
-			String[] sizeProfile = strings[0].trim().split("/");
+			String[] sizeProfile = stringList.get(0).trim().split("/");
 			if (sizeProfile.length != 2) {
-				throw new IllegalArgumentException("Size and Profile is invalid: " + strings[0]);
+				System.out.println("ERROR=====: Size and Profile is invalid: " + strings[0]);				
+				throw new UnsupportedOperationException("Invalid size profile");
+				
 			}
 			
 			tyres.setWidth(sizeProfile[0]);
@@ -139,12 +178,12 @@ public class ErrolsTyresScapper {
 		
 		// set size
 		if (1 < length) {
-			tyres.setSize(strings[1].trim());
+			tyres.setSize(stringList.get(1).trim());
 		}
 		
 		// set loadIndex and SI
 		if (2 < length) {
-			String loadIndexSI = strings[2].trim();
+			String loadIndexSI = stringList.get(2).trim();
 			int loadIndexSILength = loadIndexSI.length();
 			if (loadIndexSILength == 1) { // SI only
 				tyres.setSi(loadIndexSI);
@@ -156,7 +195,7 @@ public class ErrolsTyresScapper {
 	}
 	
 	public void doUpdateTyresList(List<TyresCollection> tyresCollectionList) {
-		for (int i = 0; i < NO_TYRES_TEST; i++) {
+		for (int i = 0; i < tyresCollectionList.size(); i++) {
 			TyresCollection tyresCollection = tyresCollectionList.get(i);
 			doUpdateTyres(tyresCollection);
 		}

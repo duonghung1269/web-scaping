@@ -1,12 +1,14 @@
 package sample;
 
 import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.beust.jcommander.Strings;
 import com.google.common.net.UrlEscapers;
 
 public class ExcelUtil {
@@ -64,7 +67,10 @@ public class ExcelUtil {
 						tyresCollection.getId()
 				};
 				
-				objArray[IMAGE_COLUMN_INDEX] = getImageStream(tyresCollection.getImageUrl());
+				if (!Strings.isStringEmpty(tyresCollection.getImageUrl())) {
+					objArray[IMAGE_COLUMN_INDEX] = getImageStream(tyresCollection.getImageUrl());
+				}
+
 				data.put(String.valueOf(rowNumber++), objArray);
 			}
 			
@@ -127,8 +133,14 @@ public class ExcelUtil {
 	}
 	
 	private static InputStream getImageStream(String imageUrl) throws IOException {
+//		if (Strings.isStringEmpty(imageUrl)) {
+//			return new ByteArrayInputStream(new byte[0]);
+//		}
 		URL url = new URL(UrlEscapers.urlFragmentEscaper().escape(imageUrl));
-	    return url.openStream();
+		URLConnection urlConnection = url.openConnection();
+//		urlConnection.connect();
+		urlConnection.addRequestProperty("User-Agent", "Chrome/50.0.2661.94");
+	    return urlConnection.getInputStream();
 	}
 	
 	private static Dimension addImages(InputStream in, Workbook requestReport, Sheet sheet, int row, int  col) throws IOException {
