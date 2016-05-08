@@ -69,6 +69,8 @@ public class ExcelUtil {
 				
 				if (!Strings.isStringEmpty(tyresCollection.getImageUrl())) {
 					objArray[IMAGE_COLUMN_INDEX] = getImageStream(tyresCollection.getImageUrl());
+				} else {
+					objArray[IMAGE_COLUMN_INDEX] = "";
 				}
 
 				data.put(String.valueOf(rowNumber++), objArray);
@@ -113,8 +115,13 @@ public class ExcelUtil {
     			imagesId.add(id);
     		}
 	        
-			addImages( (InputStream) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
-			row.setHeight(IMAGE_ROW_HEIGHT);
+    		if (objArr[IMAGE_COLUMN_INDEX] instanceof InputStream) {
+    			addImages( (InputStream) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
+    			row.setHeight(IMAGE_ROW_HEIGHT);
+    		} else {
+    			// no need to add images
+    			System.out.println("no need to add images for: " + objArr[0] + " " + objArr[2]);
+    		}
 		
 			rownum++;
 	    }
