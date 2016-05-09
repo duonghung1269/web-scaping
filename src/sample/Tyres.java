@@ -1,5 +1,9 @@
 package sample;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Tyres {
 
 	private String name;
@@ -36,6 +40,7 @@ public class Tyres {
 		return name;
 	}
 
+	@XmlElement
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -44,6 +49,7 @@ public class Tyres {
 		return sku;
 	}
 
+	@XmlElement
 	public void setSku(String sku) {
 		this.sku = sku;
 	}
@@ -52,6 +58,7 @@ public class Tyres {
 		return branch;
 	}
 
+	@XmlElement
 	public void setBranch(String branch) {
 		this.branch = branch;
 	}
@@ -60,6 +67,7 @@ public class Tyres {
 		return width;
 	}
 
+	@XmlElement
 	public void setWidth(String width) {
 		this.width = width;
 	}
@@ -68,6 +76,7 @@ public class Tyres {
 		return profile;
 	}
 
+	@XmlElement
 	public void setProfile(String profile) {
 		this.profile = profile;
 	}
@@ -76,6 +85,7 @@ public class Tyres {
 		return size;
 	}
 
+	@XmlElement
 	public void setSize(String size) {
 		this.size = size;
 	}
@@ -84,6 +94,7 @@ public class Tyres {
 		return loadIndex;
 	}
 
+	@XmlElement
 	public void setLoadIndex(String loadIndex) {
 		this.loadIndex = loadIndex;
 	}
@@ -92,6 +103,7 @@ public class Tyres {
 		return si;
 	}
 
+	@XmlElement
 	public void setSi(String si) {
 		this.si = si;
 	}
@@ -100,6 +112,7 @@ public class Tyres {
 		return price;
 	}
 
+	@XmlElement
 	public void setPrice(String price) {
 		this.price = price;
 	}
@@ -108,6 +121,7 @@ public class Tyres {
 		return url;
 	}
 
+	@XmlElement
 	public void setUrl(String url) {
 		this.url = url;
 	}

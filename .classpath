@@ -7,5 +7,10 @@
 	<classpathentry kind="lib" path="lib/selenium-java-2.53.0.jar" sourcepath="C:/Users/sgscdhdx/Downloads/selenium-java-2.53.0/selenium-2.53.0/selenium-java-2.53.0-srcs.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.53.0.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.14-20160307.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-core.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-jxc.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

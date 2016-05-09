@@ -3,6 +3,10 @@ package sample;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class TyresCollection {
 	
 	private int id;
@@ -26,15 +30,21 @@ public class TyresCollection {
 	public String getName() {
 		return name;
 	}
+	
+	@XmlElement
 	public void setName(String name) {
 		this.name = name;
 	}
 	public String getImageUrl() {
 		return imageUrl;
 	}
+	
+	@XmlElement
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+	
+	@XmlElement(name="tyres")
 	public List<Tyres> getTyresList() {
 		return tyresList;
 	}
@@ -46,6 +56,7 @@ public class TyresCollection {
 		return pageUrl;
 	}
 
+	@XmlElement
 	public void setPageUrl(String pageUrl) {
 		this.pageUrl = pageUrl;
 	}
@@ -58,6 +69,7 @@ public class TyresCollection {
 		return branch;
 	}
 
+	@XmlElement
 	public void setBranch(String branch) {
 		this.branch = branch;
 	}
@@ -66,6 +78,7 @@ public class TyresCollection {
 		return id;
 	}
 
+	@XmlElement
 	public void setId(int id) {
 		this.id = id;
 	}

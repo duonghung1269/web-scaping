@@ -115,7 +115,7 @@ public class ExcelUtil {
     			imagesId.add(id);
     		}
 	        
-    		if (objArr[IMAGE_COLUMN_INDEX] instanceof InputStream) {
+    		if (objArr[IMAGE_COLUMN_INDEX] instanceof byte[]) {
     			addImages( (byte[]) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
     			row.setHeight(IMAGE_ROW_HEIGHT);
     		} else {

@@ -1,10 +1,16 @@
 package sample;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -202,12 +208,55 @@ public class ErrolsTyresScapper {
 	}
 
 	public static void main(String[] args) throws IOException {
-		ErrolsTyresScapper scrapper = new ErrolsTyresScapper();
-		scrapper.openSite(URL);
-		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
-		scrapper.doUpdateTyresList(tyresCollectionList);
+//		ErrolsTyresScapper scrapper = new ErrolsTyresScapper();
+//		scrapper.openSite(URL);
+//		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
+//		scrapper.doUpdateTyresList(tyresCollectionList);
 
+//		try {
+//
+//	            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
+//	            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+//
+//	            // output pretty printed
+//	            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//
+//	            File f = new File("testMarshal.xml");
+//	            TyresCollectionWrapper wrapper = new TyresCollectionWrapper();
+//	            wrapper.setTyresCollectionList(tyresCollectionList);
+//	            jaxbMarshaller.marshal(wrapper, f);
+//	            //jaxbMarshaller.marshal(tyresCollectionList, System.out);
+//
+//	        } catch (JAXBException e) {
+//	            e.printStackTrace();
+//	        }
+		
+		TyresCollectionWrapper loadTyresCollectionWrapper = loadTyresCollectionWrapper();
+		
+		List<TyresCollection> tyresCollectionList = loadTyresCollectionWrapper.getTyresCollectionList();
+		
+//		List<TyresCollection> t2 = new ArrayList<>();
+//		t2.add(tyresCollectionList.get(0));
+//		t2.add(tyresCollectionList.get(1));
 		ExcelUtil.exportToExcel(tyresCollectionList, "ErrolsTyres.xls");
-		scrapper.closeBrowser();
+//		scrapper.closeBrowser();
 	}
+	
+	public static TyresCollectionWrapper loadTyresCollectionWrapper() {
+        try {
+
+        	File f = new File("testMarshal.xml");
+            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
+
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            TyresCollectionWrapper wrapper = (TyresCollectionWrapper) jaxbUnmarshaller.unmarshal(f);
+//            System.out.println(personCollection);
+            return wrapper;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        return new TyresCollectionWrapper();
+    }
+
 }
