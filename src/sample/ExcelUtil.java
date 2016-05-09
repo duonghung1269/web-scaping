@@ -116,7 +116,7 @@ public class ExcelUtil {
     		}
 	        
     		if (objArr[IMAGE_COLUMN_INDEX] instanceof InputStream) {
-    			addImages( (InputStream) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
+    			addImages( (byte[]) objArr[IMAGE_COLUMN_INDEX], workbook, sheet, rownum, IMAGE_COLUMN_INDEX);
     			row.setHeight(IMAGE_ROW_HEIGHT);
     		} else {
     			// no need to add images
@@ -139,7 +139,7 @@ public class ExcelUtil {
 	    }
 	}
 	
-	private static InputStream getImageStream(String imageUrl) throws IOException {
+	private static byte[] getImageStream(String imageUrl) throws IOException {
 //		if (Strings.isStringEmpty(imageUrl)) {
 //			return new ByteArrayInputStream(new byte[0]);
 //		}
@@ -147,17 +147,21 @@ public class ExcelUtil {
 		URLConnection urlConnection = url.openConnection();
 //		urlConnection.connect();
 		urlConnection.addRequestProperty("User-Agent", "Chrome/50.0.2661.94");
-	    return urlConnection.getInputStream();
+		urlConnection.addRequestProperty("Connection", "keep-alive");
+	    InputStream inputStream = urlConnection.getInputStream();
+	    byte[] bytes = IOUtils.toByteArray(inputStream);
+	    inputStream.close();
+		return bytes;
 	}
 	
-	private static Dimension addImages(InputStream in, Workbook requestReport, Sheet sheet, int row, int  col) throws IOException {
+	private static Dimension addImages(byte[] bytes, Workbook requestReport, Sheet sheet, int row, int  col) throws IOException {
 		Drawing patriarch = sheet.createDrawingPatriarch();
 	    CreationHelper helper = requestReport.getCreationHelper();
 	    ClientAnchor anchor = helper.createClientAnchor();
-
-	    byte[] bytes = IOUtils.toByteArray(in);
+	    
+//	    byte[] bytes = IOUtils.toByteArray(in);
 	    int pictureIndex = requestReport.addPicture(bytes, HSSFWorkbook.PICTURE_TYPE_PNG);
-	  in.close();
+//	  in.close();
 	    if (patriarch == null) {
 	        patriarch = sheet.createDrawingPatriarch();
 	    }
