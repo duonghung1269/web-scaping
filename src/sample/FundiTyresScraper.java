@@ -13,7 +13,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class FundiTyresScraper {
 	private final static String URL = "http://www.fundityres.co.za/tyres?id=16&tyre_brand=&tyre_profile=&tyre_quality=&tyre_rimsize=&tyre_width=&p=";
 	private static final int NO_TYRES_TEST = 2;
-	private static final int MAX_PAGE = 50;  // 184
+	private static final int MAX_PAGE = 184;  // 184
 	private int pageNum = 1;
 	
 	private WebDriver webDriver;
@@ -41,7 +41,7 @@ public class FundiTyresScraper {
 			openSite(url);
 			List<WebElement> productElements = webDriver.findElements(By
 					.xpath("//div[@class='category-products']/ol/li"));
-			for (int itemIndex = 0; itemIndex < NO_TYRES_TEST; itemIndex++) {
+			for (int itemIndex = 0; itemIndex < productElements.size(); itemIndex++) {
 				WebElement element = productElements.get(itemIndex);
 				
 				String productUrl = element.findElement(
@@ -115,9 +115,12 @@ public class FundiTyresScraper {
 		FundiTyresScraper scrapper = new FundiTyresScraper();
 		scrapper.openSite(URL + scrapper.pageNum++);
 		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
+		
+		ExcelUtil.marshalToXML(tyresCollectionList, "FundiTyresParsedAllUrl.xml");
+		
 		scrapper.doUpdateTyresList(tyresCollectionList);
 
-		ExcelUtil.marshalToXML(tyresCollectionList, "FundiTyresParsed,xml");
+		ExcelUtil.marshalToXML(tyresCollectionList, "FundiTyresParsed.xml");
 		
 		ExcelUtil.exportToExcel(tyresCollectionList, "FundiTyres.xls");
 		scrapper.closeBrowser();
