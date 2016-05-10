@@ -213,50 +213,16 @@ public class ErrolsTyresScapper {
 //		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
 //		scrapper.doUpdateTyresList(tyresCollectionList);
 
-//		try {
-//
-//	            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
-//	            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-//
-//	            // output pretty printed
-//	            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//
-//	            File f = new File("testMarshal.xml");
-//	            TyresCollectionWrapper wrapper = new TyresCollectionWrapper();
-//	            wrapper.setTyresCollectionList(tyresCollectionList);
-//	            jaxbMarshaller.marshal(wrapper, f);
-//	            //jaxbMarshaller.marshal(tyresCollectionList, System.out);
-//
-//	        } catch (JAXBException e) {
-//	            e.printStackTrace();
-//	        }
+//		ExcelUtil.marshalToXML(tyresCollectionList, "ErrolsTyresParsed.xml");
 		
-		TyresCollectionWrapper loadTyresCollectionWrapper = loadTyresCollectionWrapper();
+		TyresCollectionWrapper loadTyresCollectionWrapper = ExcelUtil.loadTyresCollectionWrapper("ErrolsTyresParsed.xml");
 		
 		List<TyresCollection> tyresCollectionList = loadTyresCollectionWrapper.getTyresCollectionList();
 		
-//		List<TyresCollection> t2 = new ArrayList<>();
-//		t2.add(tyresCollectionList.get(0));
-//		t2.add(tyresCollectionList.get(1));
 		ExcelUtil.exportToExcel(tyresCollectionList, "ErrolsTyres.xls");
 //		scrapper.closeBrowser();
 	}
 	
-	public static TyresCollectionWrapper loadTyresCollectionWrapper() {
-        try {
-
-        	File f = new File("testMarshal.xml");
-            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
-
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            TyresCollectionWrapper wrapper = (TyresCollectionWrapper) jaxbUnmarshaller.unmarshal(f);
-//            System.out.println(personCollection);
-            return wrapper;
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-
-        return new TyresCollectionWrapper();
-    }
+	
 
 }

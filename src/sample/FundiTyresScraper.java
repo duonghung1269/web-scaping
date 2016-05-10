@@ -117,6 +117,8 @@ public class FundiTyresScraper {
 		List<TyresCollection> tyresCollectionList = scrapper.getTyresCollectionList();
 		scrapper.doUpdateTyresList(tyresCollectionList);
 
+		ExcelUtil.marshalToXML(tyresCollectionList, "FundiTyresParsed,xml");
+		
 		ExcelUtil.exportToExcel(tyresCollectionList, "FundiTyres.xls");
 		scrapper.closeBrowser();
 	}

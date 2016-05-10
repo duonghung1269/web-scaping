@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -177,6 +182,43 @@ public class ExcelUtil {
 	    picture.resize();
 	    return picture.getImageDimension();
 //	    picture.setLineStyle(HSSFPicture.LINESTYLE_DASHDOTGEL);
+	}
+	
+	public static TyresCollectionWrapper loadTyresCollectionWrapper(String fileNameXML) {
+        try {
+
+        	File f = new File(fileNameXML);
+            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
+
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            TyresCollectionWrapper wrapper = (TyresCollectionWrapper) jaxbUnmarshaller.unmarshal(f);
+//            System.out.println(personCollection);
+            return wrapper;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        return new TyresCollectionWrapper();
+    }
+	
+	public static void marshalToXML(List<TyresCollection> tyresCollectionList, String fileNameXML) {
+		try {
+
+	            JAXBContext jaxbContext = JAXBContext.newInstance(TyresCollectionWrapper.class);
+	            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+	            // output pretty printed
+	            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+	            File f = new File(fileNameXML);
+	            TyresCollectionWrapper wrapper = new TyresCollectionWrapper();
+	            wrapper.setTyresCollectionList(tyresCollectionList);
+	            jaxbMarshaller.marshal(wrapper, f);
+	            //jaxbMarshaller.marshal(tyresCollectionList, System.out);
+
+	        } catch (JAXBException e) {
+	            e.printStackTrace();
+	        }
 	}
 
 }
